@@ -68,19 +68,23 @@ for result in result_os.split('\n'):
 ### Ваш скрипт:
 ```python
 #!/usr/bin/env python3
+
 import os
 
-bash_command = ["cd ~/netology/sysadm-homeworks", "git status"]
-result_os = os.popen(' && '.join(bash_command)).read()
-for result in result_os.split('\n'):
-    if result.find('modified') != -1:
-        prepare_result = result.replace('\tmodified:   ', '')
-        print(prepare_result)
+repo_path = "~/netology/sysadm-homeworks"  # Путь к репозиторию
+bash_command = f"cd {repo_path} && git diff --name-only"
+result_os = os.popen(bash_command).read()
+
+
+changed_files = result_os.strip().split('\n')
+for file in changed_files:
+    full_path = os.path.join(repo_path, file)
+    print(full_path)
 ```
 ### Вывод скрипта при запуске во время тестирования:
 
 ```
-???
+~/netology/sysadm-homeworks/1.py
 ```
 
 ------
@@ -92,13 +96,31 @@ for result in result_os.split('\n'):
 ### Ваш скрипт:
 
 ```python
-???
+#!/usr/bin/env python3
+
+import os
+import argparse
+
+parser = argparse.ArgumentParser
+parser.add_argument('repo_path')
+args = parser.parse_args()
+
+repo_path = args.repo_path
+bash_command = f"cd {repo_path} && git diff --name-only"
+result_os = os.popen(bash_command).read()
+
+changed_files = result_os.strip().split('\n')
+for file in changed_files:
+    full_path = os.path.join(repo_path, file)
+    print(full_path)
+
 ```
 
 ### Вывод скрипта при запуске во время тестирования:
 
 ```
-???
+sa@rav:~$ python3 4.py ~/netology/sysadm-homeworks
+/home/sa/netology/sysadm-homeworks/1.py
 ```
 
 ------
@@ -120,13 +142,47 @@ for result in result_os.split('\n'):
 ### Ваш скрипт:
 
 ```python
-???
+import socket
+
+services = {
+    "drive.google.com": None,
+    "mail.google.com": None,
+    "google.com": None
+}
+
+def get_ip(hostname):
+    try:
+        ip = socket.gethostbyname(hostname)
+        return ip
+    except socket.gaierror:
+        return None
+
+def check_service_ip(service, ip):
+    if service in services and services[service] is not None:
+        if ip != services[service]:
+            print(f"[ERROR] {service} IP mismatch: {services[service]} {ip}")
+    services[service] = ip
+
+def main():
+    for service in services:
+        ip = get_ip(service)
+        if ip is not None:
+            print(f"{service} - {ip}")
+            check_service_ip(service, ip)
+        else:
+            print(f"[ERROR] Недоступен ip {service}")
+
+if __name__ == "__main__":
+    main()
+
 ```
 
 ### Вывод скрипта при запуске во время тестирования:
 
 ```
-???
+drive.google.com - 64.233.162.194
+mail.google.com - 142.251.1.18
+google.com - 64.233.162.102
 ```
 
 ------
